@@ -49,10 +49,11 @@ export const insertUserIfNotExists = async user => {
             tx.executeSql(
               'INSERT INTO Users (username, email, password, location) VALUES (?,?,?,?)',
               [user.name, user.email, user.password, user.location],
-              () => {
+              (_, results) => {
                 resolve({
                   success: true,
                   message: 'Kullanıcı başarıyla kaydoldu.',
+                  userId: results.insertId,
                 });
               },
               (_, error) => {

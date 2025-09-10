@@ -6,7 +6,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as Yup from 'yup';
 import { defaultScreenStyle } from '../../styles/screenStyle';
 import TextTitle from '../../components/ui/TextTitle';
@@ -15,8 +15,15 @@ import { Formik } from 'formik';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { insertUserIfNotExists } from '../../utils/db';
+import { useDispatch, useSelector } from 'react-redux';
+import { createUser } from '../../redux/slices/authSlice';
 
 const Register = () => {
+  //
+  const user = useSelector(state => state.auth);
+
+  console.log('authState', user);
+
   // Kullanıcı kaydolmas şeması
   const RegisterSchema = Yup.object().shape({
     username: Yup.string().required('This field is required.'),
@@ -31,6 +38,11 @@ const Register = () => {
       .email('Invalid email.')
       .required('This field is required.'),
   });
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {}, []);
+
   return (
     <SafeAreaView style={defaultScreenStyle.safeContainer}>
       <View style={defaultScreenStyle.container}>
@@ -57,10 +69,9 @@ const Register = () => {
             validationSchema={RegisterSchema}
             onSubmit={async values => {
               try {
-                console.log('Kullanıcı oluşturulmaya çalışıyor.');
-                const results = await insertUserIfNotExists(values);
-
-                console.log('Sonuç :', results);
+                //
+                await dispatch(createUser(values));
+                //
               } catch (err) {
                 console.error(err);
               }
