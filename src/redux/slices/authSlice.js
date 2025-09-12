@@ -1,30 +1,19 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { insertUserIfNotExists } from '../../utils/db';
+import {
+  getUserFromDb,
+  insertUserIfNotExists,
+  loginFromDb,
+} from '../../utils/db';
+import { createUser, loginUser } from '../actions/authActions';
 
 const initialState = {
   isLogin: false,
-  user: {},
+  user: null,
   pendingLogin: false,
   pendingRegister: false,
   pendingUpdate: false,
   error: null,
 };
-
-export const createUser = createAsyncThunk(
-  'auth/createUser',
-  async (values, { rejectWithValue }) => {
-    try {
-      const response = await insertUserIfNotExists(values);
-
-      console.log('THUNK ÇALIŞTI:', response);
-
-      return response;
-    } catch (error) {
-      console.error('THUNK HATASI:', error);
-      return rejectWithValue(error);
-    }
-  },
-);
 
 const authSlice = createSlice({
   name: 'auth',
@@ -32,18 +21,42 @@ const authSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder
+      // Register Durumları
+      //  a) Yükleniyor
       .addCase(createUser.pending, (state, action) => {
         state.pendingRegister = true;
       })
+      // b) Reddedilme
       .addCase(createUser.rejected, (state, action) => {
         state.pendingRegister = false;
         state.error = action.payload;
       })
+      // c) Başarılı
       .addCase(createUser.fulfilled, (state, action) => {
-        (state.pendingRegister = false),
-          (state.user = action.payload),
-          (state.error = null),
-          (state.isLogin = true);
+        state.pendingRegister = false;
+        state.user = action.payload.user;
+        state.error = null;
+        state.isLogin = true;
+      })
+
+      // Login Durumları
+      //  a) Yükleniyor
+      .addCase(loginUser.pending, state => {
+        state.pendingLogin = true;
+      })
+      // b) Reddedilme
+      .addCase(loginUser.rejected, (state, action) => {
+        state.pendingLogin = false;
+        state.user = null;
+        state.error = action.payload;
+        state.isLogin = false;
+      })
+      // c) Başarılı
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.pendingLogin = false;
+        state.user = action.payload.user;
+        state.error = null;
+        state.isLogin = true;
       });
   },
 });

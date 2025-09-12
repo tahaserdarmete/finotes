@@ -16,13 +16,13 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { insertUserIfNotExists } from '../../utils/db';
 import { useDispatch, useSelector } from 'react-redux';
-import { createUser } from '../../redux/slices/authSlice';
+import { createUser } from '../../redux/actions/authActions';
 
 const Register = () => {
   //
   const user = useSelector(state => state.auth);
 
-  console.log('authState', user);
+  console.log('authState:', user);
 
   // Kullanıcı kaydolmas şeması
   const RegisterSchema = Yup.object().shape({
