@@ -196,4 +196,24 @@ export const getAllNotesFromDb = ({ userId }) => {
   });
 };
 
-//  3) Spesifik bir notu alma
+// Not Silme Fonksiyonu
+export const deleteNoteDromDb = async noteId => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx =>
+      tx.executeSql(
+        'DELETE FROM Notes WHERE id = ?',
+        [noteId],
+        (_, results) => {
+          if (results.rowsAffected > 0) {
+            resolve({ success: true, message: 'Silme işlemi başarılı' });
+          } else {
+            reject({ success: false, message: 'Silme işlemi başarısız' });
+          }
+        },
+        (_, error) => {
+          reject(error);
+        },
+      ),
+    );
+  });
+};
