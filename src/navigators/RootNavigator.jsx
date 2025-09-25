@@ -1,11 +1,13 @@
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import {
+  ADDNOTE,
   GETSTARTED,
   LOGIN,
   NOTEDETAIL,
   NOTELIST,
+  PROFILE,
   REGISTER,
 } from '../utils/routes';
 import GetStarted from '../screens/getStarted';
@@ -15,6 +17,8 @@ import { Colors } from '../theme/colors';
 import { useSelector } from 'react-redux';
 import NoteList from '../screens/note';
 import NoteDetail from '../screens/note/NoteDetail';
+import AddNote from '../screens/note/add';
+import { Add, ProfileCircle, SearchNormal } from 'iconsax-react-nativejs';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,16 +29,44 @@ const RootNavigator = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShown: false,
         headerStyle: {
           backgroundColor: Colors.FIRST,
         },
+        headerShadowVisible: false,
       }}
     >
       {isLogin ? (
         <Stack.Group>
-          <Stack.Screen name={NOTELIST} component={NoteList} />
+          <Stack.Screen
+            name={NOTELIST}
+            component={NoteList}
+            options={({ navigation }) => ({
+              headerRight: () => (
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Pressable
+                    style={{ marginHorizontal: 5 }}
+                    onPress={() => navigation.navigate(ADDNOTE)}
+                  >
+                    <Add size={30} color="black" />
+                  </Pressable>
+
+                  <Pressable style={{ marginHorizontal: 5 }}>
+                    <SearchNormal size={20} color="black" />
+                  </Pressable>
+                </View>
+              ),
+
+              headerLeft: () => (
+                <View style={{ flex: 1 }}>
+                  <Pressable onPress={() => navigation.navigate(PROFILE)}>
+                    <ProfileCircle size="25" color="black" />
+                  </Pressable>
+                </View>
+              ),
+            })}
+          />
           <Stack.Screen name={NOTEDETAIL} component={NoteDetail} />
+          <Stack.Screen name={ADDNOTE} component={AddNote} />
         </Stack.Group>
       ) : (
         <Stack.Group>

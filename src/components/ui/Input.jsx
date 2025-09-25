@@ -6,11 +6,12 @@ const Input = props => {
   const { label, error, editable = true } = props;
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, props.labelStyle]}>{label}</Text>
       <TextInput
         {...props}
         style={[
           styles.input,
+          props?.style,
           { borderColor: error ? Colors.SECOND : Colors.SOFTGRAY },
         ]}
       />
@@ -24,7 +25,7 @@ export default Input;
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginVertical: 5,
   },
   input: {
     backgroundColor: Colors.WHITE,
