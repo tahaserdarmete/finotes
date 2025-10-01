@@ -10,10 +10,10 @@ import React, { useEffect } from 'react';
 import { defaultScreenStyle } from '../../styles/screenStyle';
 import { Colors } from '../../theme/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNote, getAllNotes } from '../../redux/slices/noteSlice';
 import { deleteNoteDromDb, getAllNotesFromDb } from '../../utils/db';
 import NoteItem from '../../components/ui/NoteItem';
 import ListEmptyComponent from '../../components/notes/ListEmptyComponent';
+import { createNote, getAllNotes } from '../../redux/actions/noteActions';
 
 const NoteList = () => {
   const pending = false;

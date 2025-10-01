@@ -4,7 +4,7 @@ import {
   insertUserIfNotExists,
   loginFromDb,
 } from '../../utils/db';
-import { createUser, loginUser } from '../actions/authActions';
+import { createUser, loginUser, updateUser } from '../actions/authActions';
 
 const initialState = {
   isLogin: false,
@@ -18,7 +18,11 @@ const initialState = {
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    logOut: (state, action) => {
+      (state.user = null), (state.isLogin = false);
+    },
+  },
   extraReducers: builder => {
     builder
       // Register Durumları
@@ -57,8 +61,22 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.error = null;
         state.isLogin = true;
+      })
+
+      // Kullanıcı güncelleme durumları
+      .addCase(updateUser.pending, (state, action) => {
+        state.pendingUpdate = true;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.pendingUpdate = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.pendingUpdate = false;
+        state.user = action.payload;
       });
   },
 });
 
+export const { logOut } = authSlice.actions;
 export default authSlice.reducer;

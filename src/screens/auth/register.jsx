@@ -119,7 +119,7 @@ const Register = () => {
                 </View>
 
                 {/* Submit View */}
-                <View style={{ flex: 1 }}>
+                <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                   <Button
                     title={'Create Account'}
                     onPress={() => {

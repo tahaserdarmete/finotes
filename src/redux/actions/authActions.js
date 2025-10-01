@@ -3,6 +3,7 @@ import {
   getUserFromDb,
   insertUserIfNotExists,
   loginFromDb,
+  updateUserFromDb,
 } from '../../utils/db';
 
 export const createUser = createAsyncThunk(
@@ -36,6 +37,27 @@ export const loginUser = createAsyncThunk(
     } catch (err) {
       console.error('Login isteği başarısız:', err);
       return rejectWithValue(err);
+    }
+  },
+);
+
+export const updateUser = createAsyncThunk(
+  'auth/updateUser',
+  async ({ username, password, location, id }, { rejectWithValue }) => {
+    try {
+      const response = await updateUserFromDb({
+        username,
+        password,
+        location,
+        id,
+      });
+
+      console.log('Güncelleme thuk cevabı:', response);
+
+      return response.data;
+    } catch (err) {
+      console.error(err);
+      rejectWithValue(err);
     }
   },
 );

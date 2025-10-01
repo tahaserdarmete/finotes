@@ -7,7 +7,9 @@ import {
   LOGIN,
   NOTEDETAIL,
   NOTELIST,
+  PREMIUM,
   PROFILE,
+  PROFILEEDIT,
   REGISTER,
 } from '../utils/routes';
 import GetStarted from '../screens/getStarted';
@@ -19,6 +21,9 @@ import NoteList from '../screens/note';
 import NoteDetail from '../screens/note/NoteDetail';
 import AddNote from '../screens/note/add';
 import { Add, ProfileCircle, SearchNormal } from 'iconsax-react-nativejs';
+import Profile from '../screens/profile';
+import Premium from '../screens/profile/premıum';
+import ProfileEdit from '../screens/profile/edit';
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +72,9 @@ const RootNavigator = () => {
           />
           <Stack.Screen name={NOTEDETAIL} component={NoteDetail} />
           <Stack.Screen name={ADDNOTE} component={AddNote} />
+          <Stack.Screen name={PROFILE} component={Profile} />
+          <Stack.Screen name={PROFILEEDIT} component={ProfileEdit} />
+          <Stack.Screen name={PREMIUM} component={Premium} />
         </Stack.Group>
       ) : (
         <Stack.Group>

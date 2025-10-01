@@ -12,11 +12,14 @@ const Input = props => {
         style={[
           styles.input,
           props?.style,
-          { borderColor: error ? Colors.SECOND : Colors.SOFTGRAY },
+          {
+            borderColor: error ? Colors.SECOND : Colors.SOFTGRAY,
+            color: editable ? Colors.BLACK : Colors.SOFTGRAY,
+          },
         ]}
       />
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      <Text style={styles.errorText}>{error}</Text>
     </View>
   );
 };

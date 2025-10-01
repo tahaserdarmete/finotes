@@ -1,4 +1,5 @@
 import {
+  Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -10,31 +11,53 @@ import React, { useState } from 'react';
 import { defaultScreenStyle } from '../../styles/screenStyle';
 import { screenHeight, screenWidth } from '../../utils/constans';
 import Button from '../../components/ui/Button';
+import { useDispatch } from 'react-redux';
+import { deleteNote, updateNote } from '../../redux/actions/noteActions';
 
-const NoteDetail = ({ route }) => {
+const NoteDetail = ({ route, navigation }) => {
   const { note } = route.params;
 
   const [title, setTitle] = useState(note.title);
   const [desc, setDesc] = useState(note.description);
 
+  const dispatch = useDispatch();
+
+  const handleDelete = async () => {
+    try {
+      await dispatch(deleteNote({ id: note.id }));
+
+      navigation.goBack();
+    } catch (error) {
+      console.log(err);
+      Alert.alert('ERROR', error.message);
+    }
+  };
+
+  const handleUpdate = async () => {
+    console.log('save butonuna basıldı');
+    try {
+      await dispatch(updateNote({ noteId: note.id, title, description: desc }));
+      navigation.goBack();
+    } catch (err) {
+      console.error(err);
+    }
+  };
   return (
     <SafeAreaView style={defaultScreenStyle.safeContainer}>
       <View style={defaultScreenStyle.container}>
-        <ScrollView>
-          <TextInput
-            value={title}
-            onChangeText={setTitle}
-            style={[styles.input, styles.inputTitle]}
-          />
-          <TextInput
-            value={desc}
-            onChangeText={setDesc}
-            multiline
-            style={[styles.input, styles.inputDesc]}
-          />
-          <Button title="Save Note" />
-          <Button title="Delete Note" />
-        </ScrollView>
+        <TextInput
+          value={title}
+          onChangeText={setTitle}
+          style={[styles.input, styles.inputTitle]}
+        />
+        <TextInput
+          value={desc}
+          onChangeText={setDesc}
+          multiline
+          style={[styles.input, styles.inputDesc]}
+        />
+        <Button title="Save Note" onPress={handleUpdate} />
+        <Button title="Delete Note" onPress={handleDelete} />
       </View>
     </SafeAreaView>
   );
@@ -56,6 +79,6 @@ const styles = StyleSheet.create({
 
   inputDesc: {
     fontSize: 16,
-    height: screenHeight * 0.65,
+    height: screenHeight * 0.6,
   },
 });

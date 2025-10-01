@@ -12,9 +12,10 @@ const Button = props => {
       style={[
         styles.container,
         { backgroundColor: disabled ? Colors.SOFTGRAY : Colors.SECOND },
+        props.style,
       ]}
     >
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, props.textStyle]}>{title}</Text>
     </TouchableOpacity>
   );
 };

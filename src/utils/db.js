@@ -147,6 +147,47 @@ export const loginFromDb = async (email, password) => {
   });
 };
 
+// Kullanıcının bilgilerini güncelleme fonksiyonu
+export const updateUserFromDb = async ({
+  username,
+  password,
+  location,
+  id,
+}) => {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx =>
+      tx.executeSql(
+        'UPDATE Users SET username=?, password=?, location=? WHERE id=?',
+        [username, password, location, id],
+        (tx, results) => {
+          if (results.rowsAffected > 0) {
+            // Güncelleme yaptıktan sonra güncellenen kullanıcıyı bulacak sql sorgusu çalıştır
+            tx.executeSql(
+              'SELECT * FROM Users WHERE id = ?',
+              [id],
+              (_, results) => {
+                resolve({
+                  success: true,
+                  message: 'Kullanıcı başarıyla güncellendi',
+                  data: results.rows.item(0),
+                });
+              },
+              (_, error) => {
+                reject(error);
+              },
+            );
+          } else {
+            reject({ success: false, message: 'Güncelleme başarısız' });
+          }
+        },
+        (_, error) => {
+          reject(error);
+        },
+      ),
+    );
+  });
+};
+
 //                    NOT FONKSIYONLARI
 // --------------------------------------------------
 
@@ -157,15 +198,25 @@ export const insertNoteDb = ({ userId, title, description }) => {
       tx.executeSql(
         'INSERT OR REPLACE INTO Notes (userId, title, description) VALUES (?,?,?)',
         [userId, title, description],
-        (_, results) => {
-          resolve({
-            success: true,
-            message: 'Not başarıyla eklendi',
-            noteId: results.insertId,
-          });
+        (tx, results) => {
+          tx.executeSql(
+            'SELECT * FROM Notes WHERE id = ?',
+            [results.insertId],
+            (_, results) => {
+              resolve({
+                success: true,
+                message: 'Not başarıyla eklendi',
+                note: results.rows.item(0),
+              });
+            },
+            (_, error) => {
+              console.log(error);
+              reject(error);
+            },
+          );
         },
         (_, error) => {
-          conselo.log(error);
+          console.log(error);
           reject(error);
         },
       ),
@@ -197,7 +248,7 @@ export const getAllNotesFromDb = ({ userId }) => {
 };
 
 // Not Silme Fonksiyonu
-export const deleteNoteDromDb = async noteId => {
+export const deleteNoteFromDb = async noteId => {
   return new Promise((resolve, reject) => {
     db.transaction(tx =>
       tx.executeSql(
@@ -212,6 +263,54 @@ export const deleteNoteDromDb = async noteId => {
         },
         (_, error) => {
           reject(error);
+        },
+      ),
+    );
+  });
+};
+
+// Varolan notu güncelleme fonksiyonu
+export const updateNoteFromDb = async ({
+  noteId,
+  title,
+  description,
+  userId,
+}) => {
+  console.log('database güncelleme fonk çalıştı.');
+  return new Promise((resolve, reject) => {
+    db.transaction(tx =>
+      tx.executeSql(
+        'UPDATE Notes SET title = ?, description = ? WHERE id = ?;',
+        [title, description, noteId],
+        (tx, result) => {
+          // Güncelleme işlemi başarılı ise SQL kullanarak notları tekrardan al
+          tx.executeSql(
+            'SELECT * FROM Notes WHERE userId = ?',
+            [userId],
+            (_, results) => {
+              const len = results.rows.length;
+              const notes = [];
+              for (let i = 0; i < len; i++) {
+                notes.push(results.rows.item(i));
+              }
+              resolve({
+                success: true,
+                message: 'Not başarıyla güncellendi.',
+                data: notes,
+              });
+            },
+            (_, error) => {
+              reject(error);
+            },
+          );
+        },
+
+        (_, error) => {
+          console.error('Error:', error);
+          reject({
+            success: false,
+            message: 'Not güncellenirken hata oluştu',
+          });
         },
       ),
     );
